@@ -1,5 +1,5 @@
 # BMW F30 REMOTE START
-BMW F30 Remote start project, made with Arduino
+BMW F - Series Remote start project, made with ESP32
 
 # Features
 This project allows to do this things:
@@ -37,9 +37,9 @@ The lock and unlock thing is needed to be able to turn on the ignition. This is 
 
 # Required things
 Here's a list of things you need for this project:
-- Arduino Nano
+- ESP32
 - LM2596S voltage regulator board, with the output regulated to 5V
-- MCP2515 Canbus board (Niren)
+- MCP2551 Canbus board
 - 6x Relay Board with 5V relays
 - 2x 560Ω (to replicate the start button internal 560Ω resistor) 
 - 1x 1100Ω (to replicate the 12mA current outputted by the hall sensor inside the brake light switch)
@@ -117,7 +117,7 @@ This is the final look, with the spare key wired. You have to hide it somewhere 
 
 
 # Credits
-autowp for [arduino-mcp2515 library](https://github.com/autowp/arduino-mcp2515)
+handmade0octopus for [ESP32-TWAI-CAN library](https://github.com/handmade0octopus/ESP32-TWAI-CAN)
 
 # Donate
 If you like my work, feel free to [donate me](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=96KHFR9W2UR7E&source=url)! I would highly appreciate it!
