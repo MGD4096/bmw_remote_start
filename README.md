@@ -44,7 +44,7 @@ Here's a list of things you need for this project:
 - MCP2551 Canbus board
 - 6x Relay Board with 5V relays
 - 2x 560Ω (to replicate the start button internal 560Ω resistor) 
-- 1x 1100Ω (to replicate the 12mA current outputted by the hall sensor inside the brake light switch)
+- 1x 1100Ω (to replicate the 12mA current outputted by the hall sensor inside the brake light switch)(in my case 1100Ω was too big, 560Ω works perfectly)
 - The spare keyfob
 
 You can get those resistance values by putting more resistors in series and sum the resistance value.
