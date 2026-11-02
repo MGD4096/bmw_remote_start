@@ -1,21 +1,26 @@
-#include <can.h>
-#include <mcp2515.h>
+#include <ESP32-TWAI-CAN.hpp>
 #include <SPI.h>
+
+// Default for ESP32
+#define CAN_TX 1
+#define CAN_RX 3
+
+CanFrame rxFrame;
 
 //relays use inverted logic
 enum RELAY_STATUS {
-    RELAY_HIGH = 0,
-    RELAY_LOW = 1
+    RELAY_HIGH = 1,
+    RELAY_LOW = 0
 };
 
 //define pinout of transistors
 enum RELAYS {
-  RELAY_START_1 = 2,  
-  RELAY_START_2 = 3,  
-  RELAY_BRAKE = 4,
-  RELAY_KEY_POWER = 5,
-  RELAY_KEY_LOCK = 6,
-  RELAY_KEY_UNLOCK = 7
+  RELAY_START_1 = 33,  
+  RELAY_START_2 = 32,  
+  RELAY_BRAKE = 25,
+  RELAY_KEY_POWER = 26,
+  RELAY_KEY_LOCK = 14,
+  RELAY_KEY_UNLOCK = 27
 };
 
 
@@ -40,11 +45,6 @@ bool wait_for_lock_release = false;
 unsigned long last_lock_detected_time = 0;
 unsigned long cur_lock_detected_time = 0;
 
-//can library data
-struct can_frame canMsg;
-MCP2515 mcp2515(10);
-
-
 /* CAN CODES
  * BREAK LIGHT
  * 0x21A : data: first bit of Byte[0] is 1 -> break light is on
@@ -61,23 +61,11 @@ MCP2515 mcp2515(10);
 
 void can_updateStatus()
 {
-  if (mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK) {
-   /* Serial.print(canMsg.can_id, HEX); // print ID
-    Serial.print(" "); 
-    Serial.print(canMsg.can_dlc, HEX); // print DLC
-    Serial.print(" ");
-    
-    for (int i = 0; i < canMsg.can_dlc; i++)  {  // print the data
-      Serial.print(canMsg.data[i], HEX);
-      Serial.print(" ");
-    }
-
-    Serial.println(); 
-  */
+  if (ESP32Can.readFrame(rxFrame, 1000)) {
     //doing the check!
-    if(canMsg.can_id == 0x21A)       //can id for brake light
+    if(rxFrame.identifier == 0x21A)       //can id for brake light
     {
-      if (canMsg.data[0] & 0x80)     //first bit of first byte is 1
+      if (rxFrame.data[0] & 0x80)     //first bit of first byte is 1
       {
         Serial.println("Brake on"); 
         status_brake_light = true;
@@ -88,36 +76,36 @@ void can_updateStatus()
         status_brake_light = false;
       }
     }
-    else if(canMsg.can_id == 0x23A)  //can id for keyfob
+    else if(rxFrame.identifier == 0x23A)  //can id for keyfob
     {
-      if(   (canMsg.data[1] == 0xF3)
-         && (canMsg.data[2] == 0x04)
-         && (canMsg.data[3] == 0x3F)) //data = 11 F3 04 3F ->  lock button pressed
+      if(   (rxFrame.data[1] == 0xF3)
+         && (rxFrame.data[2] == 0x04)
+         && (rxFrame.data[3] == 0x3F)) //data = 11 F3 04 3F ->  lock button pressed
        {
          Serial.println("Lock button pressed"); 
          status_lock_button = true;
        }
-      else if((canMsg.data[1] == 0xF3)
-         && (canMsg.data[2] == 0x01)
-         && (canMsg.data[3] == 0x3F)) //data = 11 F3 01 3F ->  unlock button pressed
+      else if((rxFrame.data[1] == 0xF3)
+         && (rxFrame.data[2] == 0x01)
+         && (rxFrame.data[3] == 0x3F)) //data = 11 F3 01 3F ->  unlock button pressed
        {
          Serial.println("Unlock button pressed, out of remote start scope"); 
          remote_started = false;
        }
-      else if((canMsg.data[1] == 0xF3)
-         && (canMsg.data[2] == 0x00)
-         && (canMsg.data[3] == 0x3F)) //data = 11 F3 00 3F ->  key button released
+      else if((rxFrame.data[1] == 0xF3)
+         && (rxFrame.data[2] == 0x00)
+         && (rxFrame.data[3] == 0x3F)) //data = 11 F3 00 3F ->  key button released
        {
          Serial.println("Key button released"); 
          status_lock_button = false;
        }
       
     }
-    else if(canMsg.can_id == 0x0A5)  //can id for engine status
+    else if(rxFrame.identifier == 0x0A5)  //can id for engine status
     {
       //engine running status
-      if((canMsg.data[5] == 0x00 &&
-          canMsg.data[6] == 0x00)) //data: Byte[5] = 0x00 and Byte[5] = 0x00 -> if engine is NOT running
+      if((rxFrame.data[5] == 0x00 &&
+          rxFrame.data[6] == 0x00)) //data: Byte[5] = 0x00 and Byte[5] = 0x00 -> if engine is NOT running
        {
          //Serial.println("Engine is NOT running"); 
          status_engine_running = false;
@@ -138,22 +126,19 @@ void can_updateStatus()
 
 void can_setup()
 {
-  //reset mcp2515 and set can at 500KBPS and MCP to 8MHz quartz
-  mcp2515.reset();
-  mcp2515.setBitrate(CAN_500KBPS, MCP_8MHZ);
+  // Set pins
+  ESP32Can.setPins(CAN_TX, CAN_RX);
 
-  //init the mask
-  mcp2515.setFilterMask(MCP2515::MASK0, 0, 0x3ff);
-  mcp2515.setFilterMask(MCP2515::MASK1, 0, 0x3ff);
+  // .setSpeed() and .begin() functions require to use TwaiSpeed enum,
+  // but you can easily convert it from numerical value using .convertSpeed()
+  ESP32Can.setSpeed(ESP32Can.convertSpeed(500));
 
-  //init the filters
-  mcp2515.setFilter(MCP2515::RXF0, 0, 0x21A); //break light
-  mcp2515.setFilter(MCP2515::RXF1, 0, 0x23A); //keyfob
-  mcp2515.setFilter(MCP2515::RXF2, 0, 0x0A5); //rpm
-
-  //start the sniffing
-  mcp2515.setNormalMode();
-  
+  // You can also just use .begin()..
+  if(ESP32Can.begin()) {
+      Serial.println("CAN bus started!");
+  } else {
+      Serial.println("CAN bus failed!");
+  }
 }
 
 
@@ -303,7 +288,6 @@ void setup() {
 }  
  
 void loop() {  
-
     //update status
     can_updateStatus();
 
@@ -384,7 +368,4 @@ void loop() {
     //engine preheating
     if(engine_stop)
       engine_do_stop();
-    
-    
-    
 }
