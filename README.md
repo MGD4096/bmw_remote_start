@@ -1,5 +1,6 @@
-# BMW F30 REMOTE START
+# BMW F-Series REMOTE START
 BMW F - Series Remote start project, made with ESP32
+This project base on [bmw_remote_start](https://github.com/AlbertoMarziali/bmw_remote_start) repository
 
 # Features
 This project allows to do this things:
@@ -9,7 +10,7 @@ This project allows to do this things:
 - You have to unlock the car before driving it (why wouldn't you) or it will perform an emergency anti-thief stop
 
 # How it works
-The Arduino, thanks to the MCP2515 board, constantly listen to the BMW K-CAN2 bus, looking for a triple lock button click. If found, it starts a 18 seconds long operation, during which it does those steps:
+The ESP32, thanks to the ESP32-TWAI-CAN library and MCP2551 transreciver board, constantly listen to the BMW K-CAN2 bus, looking for a triple lock button click. If found, it starts a 18 seconds long operation, during which it does those steps:
 1. Turns on the in-car keyfob
 2. Unlocks the car
 3. Locks the car 
@@ -99,7 +100,7 @@ You have to simulate the press of the switch using the relay. To do that, just h
 
 ![KEY_LOCK/UNLOCK wiring](images/wiring_3.jpg)
 
-## Arduino wiring
+## ESP32 wiring
 
 **Schematic**
 
@@ -118,6 +119,7 @@ This is the final look, with the spare key wired. You have to hide it somewhere 
 
 # Credits
 handmade0octopus for [ESP32-TWAI-CAN library](https://github.com/handmade0octopus/ESP32-TWAI-CAN)
+[AlbertoMarziali](https://github.com/AlbertoMarziali/)
 
 # Donate
 If you like my work, feel free to [donate me](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=96KHFR9W2UR7E&source=url)! I would highly appreciate it!
