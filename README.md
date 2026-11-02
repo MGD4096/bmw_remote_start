@@ -1,5 +1,6 @@
 # BMW F-Series REMOTE START
-BMW F - Series Remote start project, made with ESP32
+BMW F-Series Remote start project, made with ESP32
+
 This project base on [AlbertoMarziali/bmw_remote_start](https://github.com/AlbertoMarziali/bmw_remote_start) repository
 
 # Features
@@ -118,11 +119,13 @@ This is the final look, with the spare key wired. You have to hide it somewhere 
 
 ## Plans
 -support to early G - series, not supported factory remote start
+
 -Phone as key
 
 # Credits
 handmade0octopus for [ESP32-TWAI-CAN library](https://github.com/handmade0octopus/ESP32-TWAI-CAN)
+
 [AlbertoMarziali](https://github.com/AlbertoMarziali/)
 
 # Donate
-If you like AlbertoMarziali work, feel free to [donate me](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=96KHFR9W2UR7E&source=url)! I would highly appreciate it!
+If you like AlbertoMarziali work, feel free to [donate him](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=96KHFR9W2UR7E&source=url)! He would highly appreciate it!
