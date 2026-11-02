@@ -64,42 +64,9 @@ You have to do the wiring for:
 
 ## Car Wiring
 
-**KCAN2**
+[F-series wiring](FSeriesWiring.md)
 
-Attention: the OBD2 port doesn't have KCAN2. You can't use it. You have to take KCAN2 from the FEM
-- KCAN2_H: FEM A173\*8B, pin 50
-- KCAN2_L: FEM A173\*8B, pin 49
-
-
-**12V and GND**
-
-Attention: you can't use the 12V plug as power source, you need an always-powered 12V source. You can find it at the FEM.
-- 12V: FEM A173\*3B, pin 33
-- GND: FEM A173\*3B, pin 6
-
-
-**Brake Light Switch and Start-Stop Button**
-
-Here you can see how to wire break light switch and start/stop button:
-- The start-stop button wiring is right behind the switch button, just pull it out.
-- The break light switch wiring is above the brake pedal.
-
-![CAR Wiring](images/wiring_1.png)
-
-## KeyFob Wiring
-
-**KeyFob Power**
-
-You have to interrupt the battery positive connection, split it in 2 wires and feed them inside the relay:
-
-![KEY_POWER wiring](images/wiring_2.jpg)
-
-
-**KeyFob Lock and Unlock buttons**
-
-You have to simulate the press of the switch using the relay. To do that, just hook to the key switches like that:
-
-![KEY_LOCK/UNLOCK wiring](images/wiring_3.jpg)
+[G-series wiring](GSeriesWiring.md)
 
 ## ESP32 wiring
 
@@ -118,7 +85,7 @@ This is the final look, with the spare key wired. You have to hide it somewhere 
 ![arduino_final wiring](images/wiring_5.jpg)
 
 ## Plans
--support to early G - series, not supported factory remote start
+-support to early G-series, not supported factory remote start
 
 -Phone as key
 
